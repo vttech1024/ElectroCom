@@ -1,4 +1,5 @@
-import { CircleUserRound, Search, ShoppingBag } from "lucide-react";
+// ─── NavBar.jsx ───────────────────────────────────────────────────────────────
+import { CircleUserRound, Package, Plus, Search, ShoppingBag, Store, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -18,102 +19,131 @@ export function NavBar() {
   const onSearch = (event) => {
     event.preventDefault();
     const q = searchQuery.trim();
-    if (q) {
-      navigate(`/products?q=${encodeURIComponent(q)}`);
-      return;
-    }
-    navigate("/products");
+    navigate(q ? `/products?q=${encodeURIComponent(q)}` : "/products");
   };
 
   useEffect(() => {
     const onClickOutside = (event) => {
       if (!menuRef.current) return;
-      if (!menuRef.current.contains(event.target)) {
-        setMenuOpen(false);
-      }
+      if (!menuRef.current.contains(event.target)) setMenuOpen(false);
     };
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[var(--border-cream)] bg-[var(--parchment)]/95 backdrop-blur">
-      <div className="container-shell py-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <Link className="flex items-center gap-2 text-[24px] font-medium text-[var(--near-black)]" to="/">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] bg-[var(--terracotta)] text-[var(--ivory)]">
-              <ShoppingBag size={16} />
-            </span>
-            <span className="font-['Georgia']">ElectroMart</span>
+    <header className="volt-navbar">
+      {/* Top bar */}
+      <div className="volt-navbar-top">
+        <div className="volt-navbar-inner">
+
+          {/* Brand */}
+          <Link className="volt-nav-brand" to="/">
+            <span className="volt-nav-brand-icon"><Zap size={14} /></span>
+            <span>VOLT</span>
           </Link>
 
-          <div className="mx-auto hidden max-w-[480px] flex-1 md:block">
-            <form className="surface-card flex items-center gap-2 rounded-[32px] border border-[var(--border-warm)] bg-[var(--ivory)] px-3 py-2 shadow-none" onSubmit={onSearch}>
-              <Search size={16} className="text-[var(--stone-gray)]" />
-              <input
-                aria-label="Search products"
-                className="w-full border-none bg-transparent text-[14px] text-[var(--near-black)] outline-none placeholder:text-[var(--stone-gray)]"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <button className="btn btn-primary rounded-full px-3 py-2 text-[12px]" type="submit">
-                Search
-              </button>
-            </form>
-          </div>
+          {/* Search */}
+          <form className="volt-search-form" onSubmit={onSearch}>
+            <Search size={14} className="volt-search-icon" />
+            <input
+              aria-label="Search products"
+              className="volt-search-input"
+              placeholder="Search electronics..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button className="volt-search-btn" type="submit">SEARCH</button>
+          </form>
 
-          <nav className="ml-auto flex items-center gap-2">
-            <Link className="btn btn-sand" to="/products">
-              Shop
-            </Link>
-            {userId && (
+          {/* Right actions */}
+          <nav className="volt-nav-actions">
+            {userId ? (
               <>
-                <Link className="btn btn-sand hidden lg:inline-flex" to="/add-product">
-                  Add Product
+                <Link className="volt-nav-link hidden lg:flex" to="/add-product">
+                  <Plus size={13} /> LIST PRODUCT
                 </Link>
-                <Link className="btn btn-sand hidden lg:inline-flex" to="/my-orders">
-                  My Orders
+                <Link className="volt-nav-link hidden lg:flex" to="/my-orders">
+                  <Package size={13} /> MY ORDERS
                 </Link>
-                <Link className="btn btn-sand hidden lg:inline-flex" to="/seller-orders">
-                  Seller
+                <Link className="volt-nav-link hidden lg:flex" to="/seller-orders">
+                  <Store size={13} /> SELLER
                 </Link>
-              </>
-            )}
-             {userId ? (
-               <div className="relative" ref={menuRef}>
+                <div className="relative" ref={menuRef}>
                   <button
                     aria-label="Profile menu"
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-[12px] border border-[var(--border-warm)] bg-[var(--ivory)] text-[var(--near-black)] transition hover:shadow-[var(--ivory)_0px_0px_0px_0px,var(--ring-deep)_0px_0px_0px_1px]"
+                    className="volt-nav-avatar-btn"
                     onClick={() => setMenuOpen((prev) => !prev)}
                     type="button"
                   >
-                    <CircleUserRound size={18} />
+                    <CircleUserRound size={16} />
                   </button>
                   {menuOpen && (
-                    <div className="absolute right-0 top-12 z-50 w-[170px] rounded-[12px] border border-[var(--border-warm)] bg-[var(--ivory)] p-2 shadow-[var(--shadow-whisper)]">
-                      <Link className="block rounded-[8px] px-3 py-2 text-[14px] text-[var(--near-black)] hover:bg-[var(--warm-sand)]" to="/profile" onClick={() => setMenuOpen(false)}>
-                        Profile
+                    <div className="volt-dropdown">
+                      <Link
+                        className="volt-dropdown-item"
+                        to="/profile"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        PROFILE
                       </Link>
-                      <button className="mt-1 w-full rounded-[8px] px-3 py-2 text-left text-[14px] text-[var(--near-black)] hover:bg-[var(--warm-sand)]" onClick={logout} type="button">
-                        Logout
+                      <Link
+                        className="volt-dropdown-item lg:hidden"
+                        to="/add-product"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        LIST PRODUCT
+                      </Link>
+                      <Link
+                        className="volt-dropdown-item lg:hidden"
+                        to="/my-orders"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        MY ORDERS
+                      </Link>
+                      <Link
+                        className="volt-dropdown-item lg:hidden"
+                        to="/seller-orders"
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        SELLER ORDERS
+                      </Link>
+                      <div className="volt-dropdown-divider" />
+                      <button className="volt-dropdown-item volt-dropdown-danger" onClick={logout} type="button">
+                        LOGOUT
                       </button>
                     </div>
                   )}
                 </div>
-              ) : (
-                <>
-                  <Link className="btn btn-sand" to="/signup">
-                    Signup
-                 </Link>
-                 <Link className="btn btn-primary" to="/login">
-                  Login
-                </Link>
+              </>
+            ) : (
+              <>
+                <Link className="volt-nav-link" to="/signup">SIGNUP</Link>
+                <Link className="volt-btn-primary volt-nav-login" to="/login">LOGIN</Link>
               </>
             )}
           </nav>
-        </div>
 
+        </div>
+      </div>
+
+      {/* Sub nav strip */}
+      <div className="volt-subnav">
+        <div className="volt-navbar-inner">
+          <div className="volt-subnav-links">
+            <Link className="volt-subnav-link" to="/products">All Products</Link>
+            <Link className="volt-subnav-link" to="/products?q=laptop">Laptops</Link>
+            <Link className="volt-subnav-link" to="/products?q=phone">Phones</Link>
+            <Link className="volt-subnav-link" to="/products?q=audio">Audio</Link>
+            <Link className="volt-subnav-link" to="/products?q=camera">Cameras</Link>
+            <Link className="volt-subnav-link" to="/products?q=tablet">Tablets</Link>
+            <Link className="volt-subnav-link" to="/products?q=accessories">Accessories</Link>
+          </div>
+          <div className="volt-subnav-badge">
+            <span className="volt-dot" style={{ color: "var(--volt-success)" }} />
+            <span className="font-mono text-[10px] text-[var(--volt-muted)]">FREE SHIPPING · COD AVAILABLE</span>
+          </div>
+        </div>
       </div>
     </header>
   );

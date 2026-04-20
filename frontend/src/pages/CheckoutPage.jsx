@@ -46,56 +46,113 @@ export default function CheckoutPage() {
     }
   };
 
-  if (error && !product) return <div className="surface-card p-6 text-[15px] error-text">{error}</div>;
-  if (!product) return <div className="surface-card p-6 text-[15px] text-[var(--olive-gray)]">Loading checkout...</div>;
+  if (error && !product) return (
+    <div className="volt-card p-6 text-[14px] font-mono text-[var(--volt-danger)]">
+      <span className="text-[var(--volt-muted)] mr-2">ERR:</span>{error}
+    </div>
+  );
+  if (!product) return (
+    <div className="volt-card p-6 text-[14px] font-mono text-[var(--volt-muted)] flex items-center gap-3">
+      <span className="volt-loader" /> Loading product...
+    </div>
+  );
 
   return (
-    <section className="space-y-6">
-      <h1 className="section-title">Checkout</h1>
+    <section className="volt-section">
+      <div className="volt-page-header">
+        <div className="volt-label">CHECKOUT</div>
+        <h1 className="volt-page-title">Complete Your Order</h1>
+      </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
-        <div className="surface-card p-6">
-          <p className="eyebrow">Order item</p>
-          <div className="mt-4 grid gap-5 sm:grid-cols-[220px_1fr]">
-            <div className="overflow-hidden rounded-[16px] bg-[var(--warm-sand)]">
-              <img alt={product.title} className="h-[220px] w-full object-cover" src={imageSrc} onError={() => setImageSrc(FALLBACK_IMAGE)} />
+      <div className="grid gap-5 lg:grid-cols-[1.4fr_0.6fr]">
+        {/* Product Panel */}
+        <div className="volt-card p-0 overflow-hidden">
+          <div className="volt-card-header">
+            <span className="volt-label">ORDER ITEM</span>
+          </div>
+          <div className="grid sm:grid-cols-[280px_1fr]">
+            <div className="volt-img-block">
+              <img
+                alt={product.title}
+                className="h-[280px] w-full object-cover"
+                src={imageSrc}
+                onError={() => setImageSrc(FALLBACK_IMAGE)}
+              />
+              <div className="volt-img-overlay">
+                <span className="volt-badge-pill">{product.type || "General"}</span>
+              </div>
             </div>
-            <div className="space-y-3">
-              <Badge>{product.type || "General"}</Badge>
-              <h2 className="section-subheading text-[var(--near-black)]">{product.title}</h2>
-              <p className="text-[15px] leading-[1.6] text-[var(--olive-gray)]">{product.description}</p>
-              <p className="text-[22px] font-medium text-[var(--near-black)]">₹{Number(product.price || 0).toLocaleString("en-IN")}</p>
-              <p className="text-[14px] font-medium text-[var(--olive-gray)]">Stock available: {product.stock}</p>
+            <div className="p-6 flex flex-col justify-between gap-4">
+              <div className="space-y-3">
+                <h2 className="volt-product-title">{product.title}</h2>
+                <p className="volt-body-text">{product.description}</p>
+              </div>
+              <div className="space-y-2 pt-4 border-t border-[var(--volt-border)]">
+                <div className="volt-spec-row">
+                  <span className="volt-spec-key">STOCK</span>
+                  <span className="volt-spec-val">{product.stock} units</span>
+                </div>
+                <div className="volt-spec-row">
+                  <span className="volt-spec-key">PAYMENT</span>
+                  <span className="volt-spec-val">Cash on Delivery</span>
+                </div>
+                <div className="volt-price-display">
+                  ₹{Number(product.price || 0).toLocaleString("en-IN")}
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <aside className="surface-card p-6">
-          <p className="eyebrow">Order summary</p>
-          <div className="mt-4 space-y-4">
+        {/* Summary Panel */}
+        <aside className="volt-card p-0 overflow-hidden">
+          <div className="volt-card-header">
+            <span className="volt-label">ORDER SUMMARY</span>
+          </div>
+          <div className="p-5 space-y-5">
             <div>
-              <p className="mb-1 text-[13px] text-[var(--olive-gray)]">Quantity</p>
-              <Input aria-label="Quantity" min="1" type="number" value={quantity} onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))} />
+              <label className="volt-field-label">QUANTITY</label>
+              <input
+                aria-label="Quantity"
+                className="volt-input"
+                min="1"
+                type="number"
+                value={quantity}
+                onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
+              />
             </div>
-            <div className="space-y-2 rounded-[12px] border border-[var(--border-warm)] bg-[var(--white)] p-4 text-[14px]">
-              <div className="flex items-center justify-between">
-                <span className="text-[var(--olive-gray)]">Subtotal</span>
-                <span className="font-medium text-[var(--near-black)]">₹{subtotal.toLocaleString("en-IN")}</span>
+
+            <div className="volt-summary-block">
+              <div className="volt-summary-row">
+                <span>Subtotal</span>
+                <span>₹{subtotal.toLocaleString("en-IN")}</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-[var(--olive-gray)]">Shipping</span>
-                <span className="font-medium text-[var(--near-black)]">{shipping === 0 ? "Free" : `₹${shipping.toLocaleString("en-IN")}`}</span>
+              <div className="volt-summary-row">
+                <span>Shipping</span>
+                <span className="text-[var(--volt-accent)]">FREE</span>
               </div>
-              <div className="flex items-center justify-between border-t border-[var(--border-warm)] pt-2">
-                <span className="font-medium text-[var(--near-black)]">Order total</span>
-                <span className="text-[20px] font-medium text-[var(--near-black)]">₹{total.toLocaleString("en-IN")}</span>
+              <div className="volt-summary-total">
+                <span>Total</span>
+                <span>₹{total.toLocaleString("en-IN")}</span>
               </div>
             </div>
-            <p className="text-[12px] text-[var(--stone-gray)]">Payment method: Cash on Delivery</p>
-            {error && <p className="text-[13px] error-text">{error}</p>}
-            <Button className="w-full !py-3" disabled={placing} onClick={placeOrder}>
-              {placing ? "Placing order..." : "Place COD Order"}
-            </Button>
+
+            <div className="volt-cod-badge">
+              <span className="volt-dot" />
+              Cash on Delivery
+            </div>
+
+            {error && (
+              <p className="text-[12px] font-mono text-[var(--volt-danger)] bg-[var(--volt-danger-bg)] border border-[var(--volt-danger)] px-3 py-2">
+                {error}
+              </p>
+            )}
+
+            <button className="volt-btn-primary w-full" disabled={placing} onClick={placeOrder}>
+              {placing ? (
+                <span className="flex items-center justify-center gap-2"><span className="volt-btn-loader" />PLACING ORDER</span>
+              ) : "PLACE COD ORDER"}
+            </button>
           </div>
         </aside>
       </div>

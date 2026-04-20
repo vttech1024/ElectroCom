@@ -1,28 +1,17 @@
+// ─── AddProductPage.jsx ───────────────────────────────────────────────────────
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import api from "../api";
-import { Button } from "../components/ui/Button";
-import { Input } from "../components/ui/Input";
 
 export default function AddProductPage() {
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { isSubmitting }
-  } = useForm();
+  const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm();
 
   const onSubmit = async (values) => {
-    setMessage("");
-    setErrorMessage("");
+    setMessage(""); setErrorMessage("");
     try {
-      await api.post("/products", {
-        ...values,
-        price: Number(values.price),
-        stock: Number(values.stock)
-      });
+      await api.post("/products", { ...values, price: Number(values.price), stock: Number(values.stock) });
       reset();
       setMessage("Product listed successfully.");
     } catch (err) {
@@ -31,43 +20,65 @@ const {
   };
 
   return (
-    <section className="mx-auto max-w-3xl">
-      <div className="surface-card rounded-[32px] p-8">
-        <p className="eyebrow">Seller tools</p>
-        <h1 className="section-heading mt-2">Add new product</h1>
-        <p className="mt-2 text-[15px] text-[var(--olive-gray)]">Build a clean listing with title, image, pricing, and stock.</p>
+    <section className="volt-section">
+      <div className="volt-page-header">
+        <div className="volt-label">SELLER TOOLS</div>
+        <h1 className="volt-page-title">List New Product</h1>
+      </div>
 
-        <form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
-          <Input aria-label="Product title" placeholder="Product title" {...register("title", { required: true })} />
-          <select aria-label="Product type" className="input-control" defaultValue="" {...register("type", { required: true })}>
-            <option disabled value="">
-              Select product type
-            </option>
-            <option value="Electronics">Electronics</option>
-            <option value="Fashion">Fashion</option>
-            <option value="Home">Home</option>
-            <option value="Beauty">Beauty</option>
-            <option value="Sports">Sports</option>
-            <option value="Books">Books</option>
-            <option value="Kitchen">Kitchen</option>
-            <option value="Office">Office</option>
-            <option value="Toys">Toys</option>
-            <option value="Accessories">Accessories</option>
-            <option value="General">General</option>
-          </select>
-          <textarea aria-label="Product description" className="input-control min-h-[140px]" placeholder="Product description" {...register("description", { required: true })} />
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Input aria-label="Price" min="0" placeholder="Price" step="0.01" type="number" {...register("price", { required: true })} />
-            <Input aria-label="Stock" min="0" placeholder="Stock" type="number" {...register("stock", { required: true })} />
+      <div className="volt-card p-0 overflow-hidden max-w-2xl">
+        <div className="volt-card-header">
+          <span className="volt-label">PRODUCT DETAILS</span>
+        </div>
+        <form className="p-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
+          <div>
+            <label className="volt-field-label">PRODUCT TITLE</label>
+            <input className="volt-input" placeholder="e.g. Sony WH-1000XM5 Headphones" {...register("title", { required: true })} />
           </div>
-          <Input aria-label="Image URL" placeholder="Image URL (optional)" {...register("imageUrl")} />
 
-          {message && <p className="text-[13px] success-text">{message}</p>}
-          {errorMessage && <p className="text-[13px] error-text">{errorMessage}</p>}
+          <div>
+            <label className="volt-field-label">CATEGORY</label>
+            <select className="volt-input volt-select" defaultValue="" {...register("type", { required: true })}>
+              <option disabled value="">Select category</option>
+              {["Electronics","Fashion","Home","Beauty","Sports","Books","Kitchen","Office","Toys","Accessories","General"].map(t => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+          </div>
 
-          <Button disabled={isSubmitting} type="submit" variant="dark">
-            {isSubmitting ? "Saving..." : "Save Product"}
-          </Button>
+          <div>
+            <label className="volt-field-label">DESCRIPTION</label>
+            <textarea className="volt-input volt-textarea" placeholder="Describe the product specs, features, and condition..." {...register("description", { required: true })} />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="volt-field-label">PRICE (₹)</label>
+              <input className="volt-input" min="0" placeholder="0.00" step="0.01" type="number" {...register("price", { required: true })} />
+            </div>
+            <div>
+              <label className="volt-field-label">STOCK UNITS</label>
+              <input className="volt-input" min="0" placeholder="0" type="number" {...register("stock", { required: true })} />
+            </div>
+          </div>
+
+          <div>
+            <label className="volt-field-label">IMAGE URL <span className="normal-case font-normal text-[var(--volt-muted)]">(optional)</span></label>
+            <input className="volt-input" placeholder="https://..." {...register("imageUrl")} />
+          </div>
+
+          {message && (
+            <div className="volt-success-banner font-mono text-[12px]">✓ {message}</div>
+          )}
+          {errorMessage && (
+            <div className="font-mono text-[12px] text-[var(--volt-danger)] bg-[var(--volt-danger-bg)] border border-[var(--volt-danger)] px-3 py-2">
+              ERR: {errorMessage}
+            </div>
+          )}
+
+          <button className="volt-btn-primary" disabled={isSubmitting} type="submit">
+            {isSubmitting ? "SAVING PRODUCT..." : "LIST PRODUCT"}
+          </button>
         </form>
       </div>
     </section>

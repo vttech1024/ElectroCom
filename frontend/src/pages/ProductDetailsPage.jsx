@@ -1,9 +1,8 @@
-import { ArrowLeft, ShieldCheck, Truck } from "lucide-react";
+// ─── ProductDetailsPage.jsx ───────────────────────────────────────────────────
+import { ArrowLeft, ShieldCheck, Truck, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import api from "../api";
-import { Badge } from "../components/ui/Badge";
-import { Button } from "../components/ui/Button";
 
 function price(value) {
   return `₹${Number(value || 0).toLocaleString("en-IN")}`;
@@ -26,59 +25,88 @@ export default function ProductDetailsPage() {
       .catch((err) => setError(err?.response?.data?.message || "Failed to load product"));
   }, [productId]);
 
-  if (error) return <div className="surface-card p-6 text-[15px] error-text">{error}</div>;
-  if (!product) return <div className="surface-card p-6 text-[15px] text-[var(--olive-gray)]">Loading product...</div>;
+  if (error) return (
+    <div className="volt-card p-6 font-mono text-[13px] text-[var(--volt-danger)]">
+      <span className="text-[var(--volt-muted)] mr-2">ERR:</span>{error}
+    </div>
+  );
+  if (!product) return (
+    <div className="volt-card p-6 font-mono text-[13px] text-[var(--volt-muted)] flex items-center gap-3">
+      <span className="volt-loader" /> Loading product...
+    </div>
+  );
 
   return (
-    <section className="space-y-6">
-      <Link className="inline-flex items-center gap-2 text-[14px] font-medium text-[var(--olive-gray)] hover:text-[var(--near-black)]" to="/products">
-        <ArrowLeft size={16} />
-        Back to products
+    <section className="volt-section">
+      <Link className="volt-back-link" to="/products">
+        <ArrowLeft size={14} /> ALL PRODUCTS
       </Link>
 
-      <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr]">
-        <div className="surface-card overflow-hidden rounded-[32px]">
-          <img
-            alt={product.title}
-            className="h-[420px] w-full object-cover lg:h-[520px]"
-            src={imageSrc}
-            onError={() => setImageSrc(fallbackImage)}
-          />
+      <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
+        {/* Image Panel */}
+        <div className="volt-card p-0 overflow-hidden">
+          <div className="volt-img-block-full">
+            <img
+              alt={product.title}
+              className="h-[420px] w-full object-cover lg:h-[500px]"
+              src={imageSrc}
+              onError={() => setImageSrc(fallbackImage)}
+            />
+            <div className="volt-img-overlay">
+              <span className="volt-badge-pill">{product.type || "General"}</span>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 divide-x divide-[var(--volt-border)] border-t border-[var(--volt-border)]">
+            <div className="volt-feature-cell">
+              <Truck size={13} className="text-[var(--volt-accent)]" />
+              <span>Fast Shipping</span>
+            </div>
+            <div className="volt-feature-cell">
+              <ShieldCheck size={13} className="text-[var(--volt-accent)]" />
+              <span>Secure Orders</span>
+            </div>
+          </div>
         </div>
 
-        <div className="surface-card p-8">
-          <Badge>In stock: {product.stock}</Badge>
-          <p className="eyebrow mt-3">{product.type || "General"}</p>
-          <h1 className="section-heading mt-3 text-[var(--near-black)]">{product.title}</h1>
-          <p className="mt-3 text-[16px] leading-[1.6] text-[var(--olive-gray)]">{product.description}</p>
-          <p className="mt-6 text-[32px] font-medium text-[var(--near-black)]">{price(product.price)}</p>
-
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <div className="panel p-3">
-              <p className="eyebrow">Payment</p>
-              <p className="mt-1 text-[15px] font-medium text-[var(--near-black)]">Cash on Delivery</p>
-            </div>
-            <div className="panel p-3">
-              <p className="eyebrow">Availability</p>
-              <p className="mt-1 text-[15px] font-medium text-[var(--near-black)]">{product.stock > 0 ? "Ready to ship" : "Out of stock"}</p>
-            </div>
+        {/* Info Panel */}
+        <div className="volt-card p-0 overflow-hidden flex flex-col">
+          <div className="volt-card-header">
+            <span className={`volt-stock-indicator ${product.stock > 0 ? "volt-in-stock" : "volt-out-stock"}`}>
+              <span className="volt-dot" />
+              {product.stock > 0 ? `${product.stock} IN STOCK` : "OUT OF STOCK"}
+            </span>
           </div>
 
-          <div className="mt-7 flex flex-wrap gap-3">
-            <Link to={`/checkout/${product._id}`}>
-              <Button className="!px-6 !py-3">Buy with COD</Button>
-            </Link>
-          </div>
+          <div className="p-6 flex flex-col flex-1 gap-5">
+            <div className="space-y-2">
+              <p className="volt-label">{product.type || "GENERAL"}</p>
+              <h1 className="volt-product-title-lg">{product.title}</h1>
+              <p className="volt-body-text">{product.description}</p>
+            </div>
 
-          <div className="mt-8 space-y-3 border-t border-[var(--border-warm)] pt-6 text-[14px] text-[var(--olive-gray)]">
-            <p className="flex items-center gap-2">
-              <Truck size={15} />
-              Fast shipping support
-            </p>
-            <p className="flex items-center gap-2">
-              <ShieldCheck size={15} />
-              Secure order handling
-            </p>
+            <div className="volt-price-hero">
+              <div className="volt-label mb-1">PRICE</div>
+              <div className="volt-price-lg">{price(product.price)}</div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="volt-spec-card">
+                <span className="volt-label">PAYMENT</span>
+                <span className="volt-spec-card-val">Cash on Delivery</span>
+              </div>
+              <div className="volt-spec-card">
+                <span className="volt-label">AVAILABILITY</span>
+                <span className="volt-spec-card-val">{product.stock > 0 ? "Ready to ship" : "Unavailable"}</span>
+              </div>
+            </div>
+
+            <div className="mt-auto pt-4 border-t border-[var(--volt-border)]">
+              <Link to={`/checkout/${product._id}`}>
+                <button className="volt-btn-primary w-full flex items-center justify-center gap-2">
+                  <Zap size={14} /> BUY WITH COD
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>

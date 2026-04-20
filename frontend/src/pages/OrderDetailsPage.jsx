@@ -1,4 +1,4 @@
-import { ArrowLeft, PackageCheck } from "lucide-react";
+import { ArrowLeft, Package } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import api from "../api";
@@ -44,90 +44,120 @@ export default function OrderDetailsPage() {
     }
   };
 
-  if (error) return <div className="surface-card p-6 text-[15px] error-text">{error}</div>;
-  if (!order) return <div className="surface-card p-6 text-[15px] text-[var(--olive-gray)]">Loading order...</div>;
+  if (error) return (
+    <div className="volt-card p-6 text-[13px] font-mono text-[var(--volt-danger)]">
+      <span className="text-[var(--volt-muted)] mr-2">ERR:</span>{error}
+    </div>
+  );
+  if (!order) return (
+    <div className="volt-card p-6 text-[13px] font-mono text-[var(--volt-muted)] flex items-center gap-3">
+      <span className="volt-loader" /> Loading order...
+    </div>
+  );
 
   return (
-    <section className="space-y-5">
-      <Link className="inline-flex items-center gap-2 text-[14px] font-medium text-[var(--olive-gray)] hover:text-[var(--near-black)]" to={backTo}>
-        <ArrowLeft size={16} />
-        Back to orders
+    <section className="volt-section">
+      <Link className="volt-back-link" to={backTo}>
+        <ArrowLeft size={14} /> BACK TO ORDERS
       </Link>
 
-      <div className="surface-card p-6">
-        <p className="eyebrow">Order details</p>
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      {/* Order Header */}
+      <div className="volt-card p-0 overflow-hidden">
+        <div className="volt-card-header flex-wrap gap-3">
           <div>
-            <p className="text-[13px] text-[var(--olive-gray)]">Order ID</p>
-            <p className="text-[15px] font-medium text-[var(--near-black)]">{order._id}</p>
+            <span className="volt-label">ORDER ID</span>
+            <p className="font-mono text-[13px] text-[var(--volt-fg)] mt-1">{order._id}</p>
           </div>
-          <span className="status-pill">{order.status}</span>
+          <div className="flex items-center gap-3">
+            <span className={`volt-status-chip volt-status-${order.status?.toLowerCase()}`}>{order.status}</span>
+          </div>
         </div>
-        <div className="mt-4 grid gap-3 text-[14px] text-[var(--olive-gray)] sm:grid-cols-3">
-          <p>Payment: {order.paymentMethod}</p>
-          <p>Items: {order.items.length}</p>
-          <p className="font-medium text-[var(--near-black)]">Total: ₹{Number(order.totalAmount || itemTotal).toLocaleString("en-IN")}</p>
+        <div className="grid grid-cols-3 divide-x divide-[var(--volt-border)] border-t border-[var(--volt-border)]">
+          <div className="volt-meta-cell">
+            <span className="volt-label">PAYMENT</span>
+            <span className="volt-meta-val">{order.paymentMethod}</span>
+          </div>
+          <div className="volt-meta-cell">
+            <span className="volt-label">ITEMS</span>
+            <span className="volt-meta-val">{order.items.length}</span>
+          </div>
+          <div className="volt-meta-cell">
+            <span className="volt-label">TOTAL</span>
+            <span className="volt-meta-val text-[var(--volt-accent)]">₹{Number(order.totalAmount || itemTotal).toLocaleString("en-IN")}</span>
+          </div>
         </div>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[1.25fr_0.75fr]">
+      <div className="grid gap-5 lg:grid-cols-[1.4fr_0.6fr]">
+        {/* Items */}
         <div className="space-y-3">
           {order.items.map((item, idx) => (
-            <article className="surface-card p-4" key={`${order._id}-${idx}`}>
-              <div className="grid gap-3 sm:grid-cols-[96px_1fr_auto] sm:items-start">
+            <article className="volt-card p-0 overflow-hidden" key={`${order._id}-${idx}`}>
+              <div className="grid sm:grid-cols-[100px_1fr_auto] sm:items-center gap-0">
                 <img
                   alt={item.title}
-                  className="h-[96px] w-[96px] rounded-[10px] object-cover"
+                  className="h-[100px] w-[100px] object-cover"
                   src={item.imageUrl || FALLBACK_IMAGE}
-                  onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = FALLBACK_IMAGE;
-                  }}
+                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = FALLBACK_IMAGE; }}
                 />
-                <div className="space-y-1">
-                  <p className="text-[16px] font-medium text-[var(--near-black)]">{item.title}</p>
-                  <p className="text-[13px] leading-[1.5] text-[var(--olive-gray)]">{item.description || "No description available."}</p>
-                  <p className="text-[13px] text-[var(--olive-gray)]">Qty: {item.quantity}</p>
+                <div className="px-4 py-3 space-y-1">
+                  <p className="text-[15px] font-semibold text-[var(--volt-fg)] tracking-tight">{item.title}</p>
+                  <p className="text-[12px] font-mono text-[var(--volt-muted)] leading-relaxed line-clamp-2">{item.description || "No description."}</p>
+                  <div className="flex items-center gap-3 pt-1">
+                    <span className="volt-qty-badge">QTY: {item.quantity}</span>
+                  </div>
                 </div>
-                <p className="text-[15px] font-medium text-[var(--near-black)]">₹{(Number(item.price || 0) * Number(item.quantity || 0)).toLocaleString("en-IN")}</p>
+                <div className="px-4 py-3 text-right shrink-0">
+                  <p className="text-[16px] font-bold text-[var(--volt-fg)] font-mono">₹{(Number(item.price || 0) * Number(item.quantity || 0)).toLocaleString("en-IN")}</p>
+                </div>
               </div>
             </article>
           ))}
         </div>
 
-        <aside className="surface-card p-5">
-          <div className="flex items-center gap-2">
-            <PackageCheck size={16} className="text-[var(--near-black)]" />
-            <p className="text-[15px] font-medium text-[var(--near-black)]">Order Tracking</p>
+        {/* Tracking Panel */}
+        <aside className="volt-card p-0 overflow-hidden self-start">
+          <div className="volt-card-header">
+            <Package size={14} className="text-[var(--volt-accent)]" />
+            <span className="volt-label ml-2">TRACKING</span>
           </div>
-          {order.status === "CANCELLED" ? (
-            <p className="mt-4 rounded-[10px] border border-[#e6c7bc] bg-[#f4e2dc] px-3 py-2 text-[13px] text-[var(--terracotta)]">Order has been cancelled.</p>
-          ) : (
-            <div className="mt-4 space-y-3">
-              {TRACKING_STEPS.map((step, idx) => {
-                const done = idx <= statusIndex;
-                return (
-                  <div className="flex items-center gap-3" key={step}>
-                    <span className={`inline-flex h-5 w-5 items-center justify-center rounded-full border text-[11px] ${done ? "border-[var(--terracotta)] bg-[var(--terracotta)] text-[var(--ivory)]" : "border-[var(--border-warm)] text-[var(--stone-gray)]"}`}>
-                      {idx + 1}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <p className={`text-[13px] ${done ? "font-medium text-[var(--near-black)]" : "text-[var(--stone-gray)]"}`}>{step}</p>
-                      {done && <span className="text-[10px] font-medium uppercase tracking-[0.32px] text-[var(--success)]">done</span>}
+          <div className="p-5">
+            {order.status === "CANCELLED" ? (
+              <div className="volt-cancelled-banner">
+                <span className="font-mono text-[12px]">ORDER CANCELLED</span>
+              </div>
+            ) : (
+              <div className="volt-tracking-rail">
+                {TRACKING_STEPS.map((step, idx) => {
+                  const done = idx <= statusIndex;
+                  const active = idx === statusIndex;
+                  return (
+                    <div className={`volt-track-step ${done ? "volt-track-step--done" : ""} ${active ? "volt-track-step--active" : ""}`} key={step}>
+                      <div className="volt-track-indicator">
+                        <span className="volt-track-dot" />
+                        {idx < TRACKING_STEPS.length - 1 && <span className="volt-track-line" />}
+                      </div>
+                      <div className="volt-track-info">
+                        <span className="volt-track-label">{step}</span>
+                        {done && <span className="volt-track-check">✓</span>}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-          {canCancel && (
-            <div className="mt-5">
-              <Button className="w-full" disabled={canceling} onClick={cancelOrder} variant="sand">
-                {canceling ? "Cancelling..." : "Cancel Order"}
-              </Button>
-            </div>
-          )}
-          {actionError && <p className="mt-3 text-[13px] error-text">{actionError}</p>}
+                  );
+                })}
+              </div>
+            )}
+
+            {canCancel && (
+              <div className="mt-5 pt-5 border-t border-[var(--volt-border)]">
+                <button className="volt-btn-danger w-full" disabled={canceling} onClick={cancelOrder}>
+                  {canceling ? "CANCELLING..." : "CANCEL ORDER"}
+                </button>
+              </div>
+            )}
+            {actionError && (
+              <p className="mt-3 text-[12px] font-mono text-[var(--volt-danger)]">{actionError}</p>
+            )}
+          </div>
         </aside>
       </div>
     </section>

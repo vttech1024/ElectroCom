@@ -1,3 +1,4 @@
+// ─── ProfilePage.jsx ──────────────────────────────────────────────────────────
 import { useEffect, useState } from "react";
 import api from "../api";
 
@@ -12,25 +13,47 @@ export default function ProfilePage() {
       .catch((err) => setError(err?.response?.data?.message || "Failed to load profile"));
   }, []);
 
-  if (error) return <div className="surface-card p-6 text-[15px] error-text">{error}</div>;
-  if (!profile) return <div className="surface-card p-6 text-[15px] text-[var(--olive-gray)]">Loading profile...</div>;
+  if (error) return (
+    <div className="volt-card p-6 font-mono text-[13px] text-[var(--volt-danger)]">
+      <span className="text-[var(--volt-muted)] mr-2">ERR:</span>{error}
+    </div>
+  );
+  if (!profile) return (
+    <div className="volt-card p-6 font-mono text-[13px] text-[var(--volt-muted)] flex items-center gap-3">
+      <span className="volt-loader" /> Loading profile...
+    </div>
+  );
 
   return (
-    <section className="mx-auto max-w-2xl">
-      <div className="surface-card p-6">
-        <h1 className="section-title">Profile</h1>
-        <div className="mt-5 grid gap-4 rounded-[14px] border border-[var(--border-warm)] bg-[var(--white)] p-4">
-          <div>
-            <p className="eyebrow">Name</p>
-            <p className="mt-1 text-[16px] font-medium text-[var(--near-black)]">{profile.name}</p>
+    <section className="volt-section max-w-2xl">
+      <div className="volt-page-header">
+        <div className="volt-label">ACCOUNT</div>
+        <h1 className="volt-page-title">Profile</h1>
+      </div>
+
+      <div className="volt-card p-0 overflow-hidden">
+        <div className="volt-card-header">
+          <div className="volt-avatar">
+            {profile.name?.charAt(0)?.toUpperCase() || "U"}
           </div>
           <div>
-            <p className="eyebrow">Email</p>
-            <p className="mt-1 text-[16px] font-medium text-[var(--near-black)]">{profile.email}</p>
+            <p className="text-[16px] font-bold text-[var(--volt-fg)] tracking-tight">{profile.name}</p>
+            <p className="font-mono text-[12px] text-[var(--volt-muted)]">{profile.email}</p>
           </div>
-          <div>
-            <p className="eyebrow">User ID</p>
-            <p className="mt-1 break-all text-[14px] text-[var(--olive-gray)]">{profile.userId}</p>
+        </div>
+
+        <div className="divide-y divide-[var(--volt-border)]">
+          <div className="volt-profile-row">
+            <span className="volt-label">NAME</span>
+            <span className="volt-profile-val">{profile.name}</span>
+          </div>
+          <div className="volt-profile-row">
+            <span className="volt-label">EMAIL</span>
+            <span className="volt-profile-val">{profile.email}</span>
+          </div>
+          <div className="volt-profile-row">
+            <span className="volt-label">USER ID</span>
+            <span className="font-mono text-[12px] text-[var(--volt-muted)] break-all">{profile.userId}</span>
           </div>
         </div>
       </div>

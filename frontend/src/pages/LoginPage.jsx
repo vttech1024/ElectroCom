@@ -1,18 +1,13 @@
+// ─── LoginPage.jsx ────────────────────────────────────────────────────────────
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api";
-import { Button } from "../components/ui/Button";
-import { Input } from "../components/ui/Input";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting }
-  } = useForm({ mode: "onChange", reValidateMode: "onChange" });
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({ mode: "onChange", reValidateMode: "onChange" });
 
   const onSubmit = async (values) => {
     setErrorMessage("");
@@ -26,35 +21,43 @@ export default function LoginPage() {
   };
 
   return (
-    <section className="mx-auto max-w-lg">
-      <div className="surface-card rounded-[32px] p-8">
-        <p className="eyebrow">Welcome back</p>
-        <h1 className="section-heading mt-2">Sign in to continue</h1>
-        <p className="mt-2 text-[15px] text-[var(--olive-gray)]">Login to manage orders, checkout, and seller tools.</p>
+    <section className="volt-auth-wrapper">
+      <div className="volt-auth-card">
+        <div className="volt-auth-brand">
+          <span className="volt-brand-mark">⚡</span>
+          <span className="volt-brand-name">VOLT</span>
+        </div>
+        <div className="volt-auth-heading">
+          <div className="volt-label">WELCOME BACK</div>
+          <h1 className="volt-auth-title">Sign In</h1>
+        </div>
 
-        <form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
+        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div>
-            <Input aria-label="Email" placeholder="Email" {...register("email", { required: "Email is required" })} />
-            {errors.email && <p className="mt-1 text-[13px] error-text">{errors.email.message}</p>}
+            <label className="volt-field-label">EMAIL</label>
+            <input className="volt-input" placeholder="you@example.com" {...register("email", { required: "Email is required" })} />
+            {errors.email && <p className="volt-field-error">{errors.email.message}</p>}
+          </div>
+          <div>
+            <label className="volt-field-label">PASSWORD</label>
+            <input className="volt-input" placeholder="••••••••" type="password" {...register("password", { required: "Password is required" })} />
+            {errors.password && <p className="volt-field-error">{errors.password.message}</p>}
           </div>
 
-          <div>
-            <Input aria-label="Password" placeholder="Password" type="password" {...register("password", { required: "Password is required" })} />
-            {errors.password && <p className="mt-1 text-[13px] error-text">{errors.password.message}</p>}
-          </div>
+          {errorMessage && (
+            <div className="font-mono text-[12px] text-[var(--volt-danger)] bg-[var(--volt-danger-bg)] border border-[var(--volt-danger)] px-3 py-2">
+              ERR: {errorMessage}
+            </div>
+          )}
 
-          {errorMessage && <p className="text-[13px] error-text">{errorMessage}</p>}
-
-          <Button className="w-full !py-3" disabled={isSubmitting} type="submit" variant="dark">
-            {isSubmitting ? "Logging in..." : "Login"}
-          </Button>
+          <button className="volt-btn-primary w-full mt-2" disabled={isSubmitting} type="submit">
+            {isSubmitting ? "SIGNING IN..." : "SIGN IN"}
+          </button>
         </form>
 
-        <p className="mt-4 text-[14px] text-[var(--olive-gray)]">
+        <p className="volt-auth-footer">
           New here?{" "}
-          <Link className="font-medium text-[var(--dark-warm)] underline underline-offset-4 hover:text-[var(--terracotta)]" to="/signup">
-            Create account
-          </Link>
+          <Link className="volt-auth-link" to="/signup">Create account →</Link>
         </p>
       </div>
     </section>
