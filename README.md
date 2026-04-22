@@ -19,7 +19,7 @@ docker-compose.yml
 docker compose up -d
 ```
 
-MongoDB will run on `mongodb://localhost:27017`.
+MongoDB will run on `mongodb://localhost:27018`.
 
 ## 2. Run backend
 
